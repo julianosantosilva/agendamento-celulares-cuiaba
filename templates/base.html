@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Agendamento Celulares - Cuiabá MT{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; }
+        .btn-primary:hover { opacity: 0.9; }
+        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.85em; }
+        .status-pendente { background-color: #ffc107; color: #000; }
+        .status-em-andamento { background-color: #17a2b8; color: #fff; }
+        .status-concluido { background-color: #28a745; color: #fff; }
+        .status-cancelado { background-color: #dc3545; color: #fff; }
+        
+        /* Espaços para anúncios */
+        .ad-space {
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ad-horizontal { min-height: 90px; }
+        .ad-vertical { min-height: 250px; }
+        .ad-square { min-height: 250px; }
+    </style>
+    
+    <!-- Google AdSense - Cole seu código aqui após aprovação -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-trophy-fill"></i> Ranking Lojas Celular - Cuiabá MT
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('ranking') }}">🏆 Ranking</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('buscar') }}">🔍 Buscar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-warning text-dark ms-2" href="{{ url_for('cadastrar_loja') }}">
+                            <i class="bi bi-shop"></i> Cadastrar Loja
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ESPAÇO ANÚNCIO 1: Banner Topo (728x90 ou responsivo) -->
+    <div class="container mt-3">
+        <div class="ad-space ad-horizontal">
+            <div>
+                <small class="text-muted">Espaço para Anúncio Google AdSense - Banner Topo</small>
+                <!-- Após aprovação do AdSense, cole o código do anúncio aqui -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+        
+        <!-- ESPAÇO ANÚNCIO 2: Banner Meio (728x90 ou responsivo) -->
+        <div class="ad-space ad-horizontal mt-4">
+            <div>
+                <small class="text-muted">Espaço para Anúncio Google AdSense - Banner Meio</small>
+                <!-- Após aprovação do AdSense, cole o código do anúncio aqui -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-4 bg-light text-center">
+        <!-- ESPAÇO ANÚNCIO 3: Banner Rodapé (728x90 ou responsivo) -->
+        <div class="ad-space ad-horizontal mb-3">
+            <div>
+                <small class="text-muted">Espaço para Anúncio Google AdSense - Banner Rodapé</small>
+                <!-- Após aprovação do AdSense, cole o código do anúncio aqui -->
+            </div>
+        </div>
+        <p class="mb-0">&copy; 2026 Ranking Lojas de Celular Cuiabá-MT | Encontre as melhores lojas</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

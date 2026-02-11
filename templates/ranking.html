@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Ranking das Melhores Lojas - Cuiabá MT{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-4"><i class="bi bi-trophy-fill text-warning"></i> Ranking das Melhores Lojas</h1>
+        <p class="lead">Baseado em avaliações do Google e Reclame Aqui</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle"></i> Como funciona o ranking?</h5>
+                <p class="mb-0">
+                    <strong>Score Total (0-100):</strong><br>
+                    • 60% baseado nas avaliações do Google (0-5 estrelas)<br>
+                    • 40% baseado no Reclame Aqui (nota 0-10 + taxa de resposta às reclamações)
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% for loja in lojas %}
+        <div class="card mb-3 {% if loop.index == 1 %}border-warning{% elif loop.index == 2 %}border-secondary{% elif loop.index == 3 %}border-danger{% endif %}">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-1 text-center">
+                        {% if loop.index == 1 %}
+                        <h1 class="display-3 mb-0">🥇</h1>
+                        {% elif loop.index == 2 %}
+                        <h1 class="display-3 mb-0">🥈</h1>
+                        {% elif loop.index == 3 %}
+                        <h1 class="display-3 mb-0">🥉</h1>
+                        {% else %}
+                        <h2 class="mb-0 text-muted">#{{ loop.index }}</h2>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <h4 class="mb-1">{{ loja.nome }}</h4>
+                        <p class="mb-0 text-muted">
+                            <i class="bi bi-geo-alt"></i> {{ loja.endereco }}<br>
+                            <i class="bi bi-telephone"></i> {{ loja.telefone }}
+                        </p>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="mb-2">
+                            <strong>Score Geral</strong>
+                            <h3 class="mb-0 text-primary">{{ "%.1f"|format(loja.ranking_score) }}/100</h3>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-primary" style="width: {{ loja.ranking_score }}%">
+                                {{ "%.0f"|format(loja.ranking_score) }}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="mb-2">
+                            <i class="bi bi-google text-danger"></i> <strong>Google</strong><br>
+                            <span class="badge bg-success">{{ loja.google_rating }}/5 ⭐</span><br>
+                            <small class="text-muted">{{ loja.google_reviews }} avaliações</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-exclamation-triangle text-warning"></i> <strong>Reclame Aqui</strong><br>
+                            <span class="badge bg-info">{{ loja.reclameaqui_rating }}/10</span><br>
+                            {% if loja.reclameaqui_reclamacoes > 0 %}
+                            <small class="text-muted">
+                                {{ "%.0f"|format((loja.reclameaqui_respondidas / loja.reclameaqui_reclamacoes) * 100) }}% respondidas
+                            </small>
+                            {% else %}
+                            <small class="text-muted">Sem reclamações</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('agendar', loja_id=loja.id) }}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-calendar-plus"></i> Agendar
+                            </a>
+                            <a href="{{ url_for('loja_detalhes', loja_id=loja.id) }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-info-circle"></i> Detalhes
+                            </a>
+                            <a href="{{ url_for('atualizar_avaliacoes', loja_id=loja.id) }}" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Atualizar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if lojas|length == 0 %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Nenhuma loja cadastrada ainda.
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar para Lojas
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Nova Loja{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="bi bi-shop"></i> Cadastrar Nova Loja</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <h5 class="mb-3">Dados Básicos</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Loja *</label>
+                        <input type="text" class="form-control" name="nome" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Endereço *</label>
+                        <input type="text" class="form-control" name="endereco" placeholder="Rua, número, bairro - Cuiabá/MT" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Telefone *</label>
+                            <input type="tel" class="form-control" name="telefone" placeholder="(65) 3333-4444" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">E-mail *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3"><i class="bi bi-google text-danger"></i> Avaliações Google</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Nota (0-5)</label>
+                            <input type="number" step="0.1" min="0" max="5" class="form-control" name="google_rating" value="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Nº Avaliações</label>
+                            <input type="number" min="0" class="form-control" name="google_reviews" value="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">URL Google Maps</label>
+                            <input type="url" class="form-control" name="google_url" placeholder="https://maps.google.com/...">
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3"><i class="bi bi-exclamation-triangle text-warning"></i> Reclame Aqui</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Nota (0-10)</label>
+                            <input type="number" step="0.1" min="0" max="10" class="form-control" name="reclameaqui_rating" value="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Reclamações</label>
+                            <input type="number" min="0" class="form-control" name="reclameaqui_reclamacoes" value="0">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Respondidas</label>
+                            <input type="number" min="0" class="form-control" name="reclameaqui_respondidas" value="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">URL Reclame Aqui</label>
+                        <input type="url" class="form-control" name="reclameaqui_url" placeholder="https://www.reclameaqui.com.br/...">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Cadastrar Loja
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

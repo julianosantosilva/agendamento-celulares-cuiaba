@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Agendamento #{{ agendamento.id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="bi bi-file-text"></i> Detalhes do Agendamento #{{ agendamento.id }}</h4>
+            </div>
+            <div class="card-body">
+                <h5>Informações do Cliente</h5>
+                <table class="table">
+                    <tr>
+                        <th width="30%">Nome:</th>
+                        <td>{{ agendamento.cliente_nome }}</td>
+                    </tr>
+                    <tr>
+                        <th>Telefone:</th>
+                        <td>{{ agendamento.cliente_telefone }}</td>
+                    </tr>
+                </table>
+
+                <h5 class="mt-4">Informações do Aparelho</h5>
+                <table class="table">
+                    <tr>
+                        <th width="30%">Marca:</th>
+                        <td>{{ agendamento.marca_celular }}</td>
+                    </tr>
+                    <tr>
+                        <th>Modelo:</th>
+                        <td>{{ agendamento.modelo_celular }}</td>
+                    </tr>
+                    <tr>
+                        <th>Problema:</th>
+                        <td>{{ agendamento.problema }}</td>
+                    </tr>
+                </table>
+
+                <h5 class="mt-4">Informações do Agendamento</h5>
+                <table class="table">
+                    <tr>
+                        <th width="30%">Loja:</th>
+                        <td>{{ agendamento.loja.nome }}</td>
+                    </tr>
+                    <tr>
+                        <th>Data/Hora:</th>
+                        <td>{{ agendamento.data_agendamento.strftime('%d/%m/%Y às %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            <span class="status-badge status-{{ agendamento.status.lower().replace(' ', '-') }}">
+                                {{ agendamento.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Valor Estimado:</th>
+                        <td>R$ {{ "%.2f"|format(agendamento.valor_estimado) }}</td>
+                    </tr>
+                    {% if agendamento.observacoes %}
+                    <tr>
+                        <th>Observações:</th>
+                        <td>{{ agendamento.observacoes }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+
+                <a href="{{ url_for('loja_detalhes', loja_id=agendamento.loja_id) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5><i class="bi bi-pencil-square"></i> Atualizar Status</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('atualizar_status', agendamento_id=agendamento.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status" required>
+                            <option value="Pendente" {% if agendamento.status == 'Pendente' %}selected{% endif %}>Pendente</option>
+                            <option value="Em Andamento" {% if agendamento.status == 'Em Andamento' %}selected{% endif %}>Em Andamento</option>
+                            <option value="Concluído" {% if agendamento.status == 'Concluído' %}selected{% endif %}>Concluído</option>
+                            <option value="Cancelado" {% if agendamento.status == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Valor Estimado (R$)</label>
+                        <input type="number" step="0.01" class="form-control" name="valor_estimado" value="{{ agendamento.valor_estimado }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Atualizar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

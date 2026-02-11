@@ -1,0 +1,34 @@
+# COMANDOS PARA SUBIR NO GITHUB
+
+# 1. Abrir terminal na pasta Agendamento_Celulares
+
+# 2. Inicializar Git
+git init
+
+# 3. Adicionar todos os arquivos
+git add .
+
+# 4. Fazer primeiro commit
+git commit -m "Sistema de ranking de lojas de conserto - Cuiabá MT"
+
+# 5. Criar repositório no GitHub:
+#    - Acesse: https://github.com/new
+#    - Nome: agendamento-celulares-cuiaba
+#    - Público
+#    - NÃO marque "Add README"
+#    - Clique em "Create repository"
+
+# 6. Conectar com GitHub (SUBSTITUA SEU_USUARIO pelo seu usuário do GitHub)
+git remote add origin https://github.com/SEU_USUARIO/agendamento-celulares-cuiaba.git
+
+# 7. Enviar código
+git branch -M main
+git push -u origin main
+
+# Se pedir usuário e senha:
+# - Usuário: seu username do GitHub
+# - Senha: use um Personal Access Token (não a senha normal)
+#   Criar token em: https://github.com/settings/tokens
+
+# PRONTO! Código está no GitHub
+# Agora vá para o Render: https://render.com
