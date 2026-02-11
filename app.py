@@ -49,19 +49,26 @@ class Loja(db.Model):
         return self.ranking_score
 
 # Rotas
+@app.route('/health')
+def health():
+    return {'status': 'ok', 'message': 'Servidor funcionando!'}, 200
+
 @app.route('/')
 def index():
-    lojas = Loja.query.all()
-    for loja in lojas:
-        loja.calcular_ranking()
-    db.session.commit()
-    
-    lojas_ordenadas = sorted(lojas, key=lambda x: x.ranking_score, reverse=True)
-    for idx, loja in enumerate(lojas_ordenadas, 1):
-        loja.ranking_posicao = idx
-    db.session.commit()
-    
-    return render_template('index.html', lojas=lojas_ordenadas)
+    try:
+        lojas = Loja.query.all()
+        for loja in lojas:
+            loja.calcular_ranking()
+        db.session.commit()
+        
+        lojas_ordenadas = sorted(lojas, key=lambda x: x.ranking_score, reverse=True)
+        for idx, loja in enumerate(lojas_ordenadas, 1):
+            loja.ranking_posicao = idx
+        db.session.commit()
+        
+        return render_template('index.html', lojas=lojas_ordenadas)
+    except Exception as e:
+        return f"Erro: {str(e)}", 500
 
 @app.route('/loja/<int:loja_id>')
 def loja_detalhes(loja_id):
@@ -127,49 +134,54 @@ def ranking():
 
 def init_db():
     with app.app_context():
-        db.create_all()
-        
-        if Loja.query.count() == 0:
-            lojas_exemplo = [
-                Loja(
-                    nome='Tech Cell CPA',
-                    endereco='Rua das Flores, 456 - CPA',
-                    telefone='(65) 3344-5678',
-                    email='cpa@techcell.com',
-                    google_rating=4.8,
-                    google_reviews=203,
-                    reclameaqui_rating=9.2,
-                    reclameaqui_reclamacoes=8,
-                    reclameaqui_respondidas=8
-                ),
-                Loja(
-                    nome='Cell Repair Cuiabá Centro',
-                    endereco='Av. Getúlio Vargas, 123 - Centro',
-                    telefone='(65) 3322-1234',
-                    email='centro@cellrepair.com',
-                    google_rating=4.5,
-                    google_reviews=127,
-                    reclameaqui_rating=8.5,
-                    reclameaqui_reclamacoes=15,
-                    reclameaqui_respondidas=14
-                ),
-                Loja(
-                    nome='Conserta Fácil Goiabeiras',
-                    endereco='Av. Fernando Corrêa, 789 - Goiabeiras',
-                    telefone='(65) 3366-9012',
-                    email='goiabeiras@consertafacil.com',
-                    google_rating=4.2,
-                    google_reviews=89,
-                    reclameaqui_rating=7.8,
-                    reclameaqui_reclamacoes=22,
-                    reclameaqui_respondidas=18
-                )
-            ]
-            for loja in lojas_exemplo:
-                loja.calcular_ranking()
-                db.session.add(loja)
-            db.session.commit()
-            print('✅ Lojas exemplo criadas!')
+        try:
+            db.create_all()
+            print('✅ Banco de dados criado!')
+            
+            if Loja.query.count() == 0:
+                lojas_exemplo = [
+                    Loja(
+                        nome='Tech Cell CPA',
+                        endereco='Rua das Flores, 456 - CPA',
+                        telefone='(65) 3344-5678',
+                        email='cpa@techcell.com',
+                        google_rating=4.8,
+                        google_reviews=203,
+                        reclameaqui_rating=9.2,
+                        reclameaqui_reclamacoes=8,
+                        reclameaqui_respondidas=8
+                    ),
+                    Loja(
+                        nome='Cell Repair Cuiabá Centro',
+                        endereco='Av. Getúlio Vargas, 123 - Centro',
+                        telefone='(65) 3322-1234',
+                        email='centro@cellrepair.com',
+                        google_rating=4.5,
+                        google_reviews=127,
+                        reclameaqui_rating=8.5,
+                        reclameaqui_reclamacoes=15,
+                        reclameaqui_respondidas=14
+                    ),
+                    Loja(
+                        nome='Conserta Fácil Goiabeiras',
+                        endereco='Av. Fernando Corrêa, 789 - Goiabeiras',
+                        telefone='(65) 3366-9012',
+                        email='goiabeiras@consertafacil.com',
+                        google_rating=4.2,
+                        google_reviews=89,
+                        reclameaqui_rating=7.8,
+                        reclameaqui_reclamacoes=22,
+                        reclameaqui_respondidas=18
+                    )
+                ]
+                for loja in lojas_exemplo:
+                    loja.calcular_ranking()
+                    db.session.add(loja)
+                db.session.commit()
+                print('✅ Lojas exemplo criadas!')
+        except Exception as e:
+            print(f'❌ Erro ao inicializar banco: {e}')
+            db.session.rollback()
 
 if __name__ == '__main__':
     init_db()
