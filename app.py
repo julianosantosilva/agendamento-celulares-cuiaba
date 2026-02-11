@@ -195,6 +195,26 @@ def ranking():
     
     return render_template('ranking.html', lojas=lojas_ordenadas)
 
+@app.route('/buscar')
+def buscar():
+    init_db_once()
+    termo = request.args.get('q', '')
+    
+    if termo:
+        lojas = Loja.query.filter(
+            (Loja.nome.contains(termo)) | 
+            (Loja.endereco.contains(termo))
+        ).all()
+    else:
+        lojas = Loja.query.all()
+    
+    for loja in lojas:
+        loja.calcular_ranking()
+    
+    lojas_ordenadas = sorted(lojas, key=lambda x: x.ranking_score, reverse=True)
+    
+    return render_template('index.html', lojas=lojas_ordenadas, termo=termo)
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
