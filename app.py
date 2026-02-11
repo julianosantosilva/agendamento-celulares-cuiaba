@@ -13,6 +13,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Criar banco automaticamente ao importar
+with app.app_context():
+    db.create_all()
+    print('✅ Banco de dados verificado/criado!')
+
 # Modelo de Loja
 class Loja(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -56,6 +61,49 @@ def health():
 @app.route('/')
 def index():
     try:
+        # Criar lojas exemplo se não existirem
+        if Loja.query.count() == 0:
+            lojas_exemplo = [
+                Loja(
+                    nome='Tech Cell CPA',
+                    endereco='Rua das Flores, 456 - CPA',
+                    telefone='(65) 3344-5678',
+                    email='cpa@techcell.com',
+                    google_rating=4.8,
+                    google_reviews=203,
+                    reclameaqui_rating=9.2,
+                    reclameaqui_reclamacoes=8,
+                    reclameaqui_respondidas=8
+                ),
+                Loja(
+                    nome='Cell Repair Cuiabá Centro',
+                    endereco='Av. Getúlio Vargas, 123 - Centro',
+                    telefone='(65) 3322-1234',
+                    email='centro@cellrepair.com',
+                    google_rating=4.5,
+                    google_reviews=127,
+                    reclameaqui_rating=8.5,
+                    reclameaqui_reclamacoes=15,
+                    reclameaqui_respondidas=14
+                ),
+                Loja(
+                    nome='Conserta Fácil Goiabeiras',
+                    endereco='Av. Fernando Corrêa, 789 - Goiabeiras',
+                    telefone='(65) 3366-9012',
+                    email='goiabeiras@consertafacil.com',
+                    google_rating=4.2,
+                    google_reviews=89,
+                    reclameaqui_rating=7.8,
+                    reclameaqui_reclamacoes=22,
+                    reclameaqui_respondidas=18
+                )
+            ]
+            for loja in lojas_exemplo:
+                loja.calcular_ranking()
+                db.session.add(loja)
+            db.session.commit()
+            print('✅ Lojas exemplo criadas!')
+        
         lojas = Loja.query.all()
         for loja in lojas:
             loja.calcular_ranking()
@@ -132,58 +180,6 @@ def ranking():
     
     return render_template('ranking.html', lojas=lojas_ordenadas)
 
-def init_db():
-    with app.app_context():
-        try:
-            db.create_all()
-            print('✅ Banco de dados criado!')
-            
-            if Loja.query.count() == 0:
-                lojas_exemplo = [
-                    Loja(
-                        nome='Tech Cell CPA',
-                        endereco='Rua das Flores, 456 - CPA',
-                        telefone='(65) 3344-5678',
-                        email='cpa@techcell.com',
-                        google_rating=4.8,
-                        google_reviews=203,
-                        reclameaqui_rating=9.2,
-                        reclameaqui_reclamacoes=8,
-                        reclameaqui_respondidas=8
-                    ),
-                    Loja(
-                        nome='Cell Repair Cuiabá Centro',
-                        endereco='Av. Getúlio Vargas, 123 - Centro',
-                        telefone='(65) 3322-1234',
-                        email='centro@cellrepair.com',
-                        google_rating=4.5,
-                        google_reviews=127,
-                        reclameaqui_rating=8.5,
-                        reclameaqui_reclamacoes=15,
-                        reclameaqui_respondidas=14
-                    ),
-                    Loja(
-                        nome='Conserta Fácil Goiabeiras',
-                        endereco='Av. Fernando Corrêa, 789 - Goiabeiras',
-                        telefone='(65) 3366-9012',
-                        email='goiabeiras@consertafacil.com',
-                        google_rating=4.2,
-                        google_reviews=89,
-                        reclameaqui_rating=7.8,
-                        reclameaqui_reclamacoes=22,
-                        reclameaqui_respondidas=18
-                    )
-                ]
-                for loja in lojas_exemplo:
-                    loja.calcular_ranking()
-                    db.session.add(loja)
-                db.session.commit()
-                print('✅ Lojas exemplo criadas!')
-        except Exception as e:
-            print(f'❌ Erro ao inicializar banco: {e}')
-            db.session.rollback()
-
 if __name__ == '__main__':
-    init_db()
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
