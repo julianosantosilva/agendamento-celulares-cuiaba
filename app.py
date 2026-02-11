@@ -13,10 +13,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Criar banco automaticamente ao importar
-with app.app_context():
-    db.create_all()
-    print('✅ Banco de dados verificado/criado!')
+# Flag para controlar inicialização
+_db_initialized = False
+
+def init_db_once():
+    global _db_initialized
+    if not _db_initialized:
+        with app.app_context():
+            db.create_all()
+            _db_initialized = True
+            print('✅ Banco de dados criado!')
 
 # Modelo de Loja
 class Loja(db.Model):
@@ -61,6 +67,9 @@ def health():
 @app.route('/')
 def index():
     try:
+        # Inicializar banco na primeira requisição
+        init_db_once()
+        
         # Criar lojas exemplo se não existirem
         if Loja.query.count() == 0:
             lojas_exemplo = [
@@ -116,15 +125,19 @@ def index():
         
         return render_template('index.html', lojas=lojas_ordenadas)
     except Exception as e:
-        return f"Erro: {str(e)}", 500
+        import traceback
+        error_details = traceback.format_exc()
+        return f"<h1>Erro</h1><pre>{error_details}</pre>", 500
 
 @app.route('/loja/<int:loja_id>')
 def loja_detalhes(loja_id):
+    init_db_once()
     loja = Loja.query.get_or_404(loja_id)
     return render_template('loja_detalhes.html', loja=loja)
 
 @app.route('/cadastrar_loja', methods=['GET', 'POST'])
 def cadastrar_loja():
+    init_db_once()
     if request.method == 'POST':
         nova_loja = Loja(
             nome=request.form['nome'],
@@ -149,6 +162,7 @@ def cadastrar_loja():
 
 @app.route('/atualizar_avaliacoes/<int:loja_id>', methods=['GET', 'POST'])
 def atualizar_avaliacoes(loja_id):
+    init_db_once()
     loja = Loja.query.get_or_404(loja_id)
     
     if request.method == 'POST':
@@ -168,6 +182,7 @@ def atualizar_avaliacoes(loja_id):
 
 @app.route('/ranking')
 def ranking():
+    init_db_once()
     lojas = Loja.query.all()
     for loja in lojas:
         loja.calcular_ranking()
