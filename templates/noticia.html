@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ noticia.titulo }} - IA News{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Notícia Principal -->
+        <article class="card mb-4">
+            <img src="{{ noticia.imagem_url }}" class="card-img-top" alt="{{ noticia.titulo }}" style="max-height: 400px; object-fit: cover;">
+            <div class="card-body">
+                <span class="badge badge-categoria bg-primary mb-3">{{ noticia.categoria.nome }}</span>
+                <h1 class="card-title">{{ noticia.titulo }}</h1>
+                
+                <div class="d-flex justify-content-between align-items-center mb-4 text-muted">
+                    <div>
+                        <i class="bi bi-person-circle"></i> {{ noticia.autor }}
+                        <span class="ms-3"><i class="bi bi-calendar"></i> {{ noticia.data_publicacao.strftime('%d/%m/%Y às %H:%M') }}</span>
+                    </div>
+                    <div>
+                        <i class="bi bi-eye"></i> {{ noticia.visualizacoes }} visualizações
+                    </div>
+                </div>
+
+                <p class="lead">{{ noticia.resumo }}</p>
+                <hr>
+                <div class="noticia-conteudo">
+                    {{ noticia.conteudo }}
+                </div>
+
+                <!-- Tags -->
+                {% if noticia.tags %}
+                <div class="mt-4">
+                    <strong>Tags:</strong>
+                    {% for tag in noticia.get_tags_list() %}
+                    <span class="badge bg-light text-dark me-1">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Ações -->
+                <div class="d-flex gap-2 mt-4">
+                    <a href="{{ url_for('like_noticia', noticia_id=noticia.id) }}" class="btn btn-outline-danger">
+                        <i class="bi bi-heart-fill"></i> Curtir ({{ noticia.likes }})
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="compartilhar()">
+                        <i class="bi bi-share"></i> Compartilhar
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <!-- Notícias Relacionadas -->
+        {% if relacionadas %}
+        <h4 class="mb-3"><i class="bi bi-link-45deg"></i> Notícias Relacionadas</h4>
+        <div class="row">
+            {% for rel in relacionadas %}
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <img src="{{ rel.imagem_url }}" class="card-img-top" alt="{{ rel.titulo }}" style="height: 150px; object-fit: cover;">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ rel.titulo }}</h6>
+                        <a href="{{ url_for('noticia_detalhes', slug=rel.slug) }}" class="btn btn-sm btn-outline-primary w-100 mt-2">
+                            Ler
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function compartilhar() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ noticia.titulo }}',
+            text: '{{ noticia.resumo }}',
+            url: window.location.href
+        });
+    } else {
+        alert('Link copiado: ' + window.location.href);
+        navigator.clipboard.writeText(window.location.href);
+    }
+}
+</script>
+{% endblock %}

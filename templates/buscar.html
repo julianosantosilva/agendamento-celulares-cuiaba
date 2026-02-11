@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Buscar{% if termo %}: {{ termo }}{% endif %} - IA News{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-search"></i> Resultados da Busca</h2>
+        {% if termo %}
+        <p class="lead">Buscando por: <strong>"{{ termo }}"</strong></p>
+        <p class="text-muted">{{ noticias|length }} notícia(s) encontrada(s)</p>
+        {% else %}
+        <p class="lead">Todas as notícias</p>
+        {% endif %}
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    {% for noticia in noticias %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ noticia.imagem_url }}" class="img-fluid rounded-start h-100" alt="{{ noticia.titulo }}" style="object-fit: cover;">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <span class="badge badge-categoria bg-primary mb-2">{{ noticia.categoria.nome }}</span>
+                        <h5 class="card-title">{{ noticia.titulo }}</h5>
+                        <p class="card-text text-muted small">{{ noticia.resumo[:100] }}...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-eye"></i> {{ noticia.visualizacoes }}
+                            </small>
+                            <a href="{{ url_for('noticia_detalhes', slug=noticia.slug) }}" class="btn btn-sm btn-primary">
+                                Ler
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if noticias|length == 0 %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> Nenhuma notícia encontrada. Tente outros termos de busca.
+</div>
+{% endif %}
+{% endblock %}

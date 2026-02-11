@@ -1,113 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12 text-center">
-        <h1 class="display-3"><i class="bi bi-trophy-fill text-warning"></i> Melhores Lojas de Conserto</h1>
-        <p class="lead">Ranking baseado em avaliações do Google e Reclame Aqui | Cuiabá-MT</p>
-        <div class="mt-3">
-            <a href="{{ url_for('ranking') }}" class="btn btn-warning btn-lg me-2">
-                <i class="bi bi-trophy"></i> Ver Ranking Completo
-            </a>
-            <a href="{{ url_for('buscar') }}" class="btn btn-outline-primary btn-lg">
-                <i class="bi bi-search"></i> Buscar por Marca
-            </a>
-        </div>
+<!-- Notícias em Destaque -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-star-fill text-warning"></i> Destaques</h2>
     </div>
-</div>
-
-<div class="row">
-    {% for loja in lojas[:6] %}
+    {% for noticia in noticias_destaque %}
     <div class="col-md-4 mb-4">
-        <div class="card h-100 {% if loop.index == 1 %}border-warning border-3{% endif %}">
-            {% if loja.foto_principal %}
-            <img src="{{ loja.foto_principal }}" class="card-img-top" alt="{{ loja.nome }}" style="height: 200px; object-fit: cover;">
-            {% else %}
-            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                <i class="bi bi-shop" style="font-size: 4rem;"></i>
-            </div>
-            {% endif %}
-            
+        <div class="card noticia-destaque h-100">
+            <img src="{{ noticia.imagem_url }}" class="card-img-top" alt="{{ noticia.titulo }}">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="card-title mb-0">
-                        {{ loja.nome }}
-                        {% if loja.verificada %}
-                        <i class="bi bi-patch-check-fill text-primary" title="Loja Verificada"></i>
-                        {% endif %}
-                    </h5>
-                    <span class="badge {% if loop.index == 1 %}bg-warning text-dark{% elif loop.index == 2 %}bg-secondary{% elif loop.index == 3 %}bg-danger{% else %}bg-info{% endif %}" style="font-size: 1.1em;">
-                        #{{ loja.ranking_posicao }}
-                    </span>
-                </div>
-                
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <small class="text-muted">Score Geral:</small>
-                        <strong class="text-primary">{{ "%.1f"|format(loja.ranking_score) }}/100</strong>
-                    </div>
-                    <div class="progress" style="height: 10px;">
-                        <div class="progress-bar bg-primary" style="width: {{ loja.ranking_score }}%"></div>
-                    </div>
-                </div>
-                
-                <div class="mb-2">
-                    <small>
-                        <i class="bi bi-google text-danger"></i> 
-                        <strong>{{ loja.google_rating }}/5</strong> ⭐
-                        <span class="text-muted">({{ loja.google_reviews }})</span>
+                <span class="badge badge-categoria bg-primary">{{ noticia.categoria.nome }}</span>
+                <h5 class="card-title mt-2">{{ noticia.titulo }}</h5>
+                <p class="card-text text-muted">{{ noticia.resumo }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-eye"></i> {{ noticia.visualizacoes }}
+                        <i class="bi bi-heart-fill text-danger ms-2"></i> {{ noticia.likes }}
                     </small>
+                    <small class="text-muted">{{ noticia.data_publicacao.strftime('%d/%m/%Y') }}</small>
                 </div>
-                
-                <div class="mb-3">
-                    <small>
-                        <i class="bi bi-exclamation-triangle text-warning"></i> 
-                        <strong>{{ loja.reclameaqui_rating }}/10</strong>
-                        {% if loja.reclameaqui_reclamacoes > 0 %}
-                        <span class="text-muted">({{ "%.0f"|format((loja.reclameaqui_respondidas / loja.reclameaqui_reclamacoes) * 100) }}% resp.)</span>
-                        {% endif %}
-                    </small>
-                </div>
-                
-                <p class="card-text mb-2">
-                    <i class="bi bi-geo-alt text-danger"></i> {{ loja.bairro }}<br>
-                    <i class="bi bi-telephone text-success"></i> {{ loja.telefone }}
-                </p>
-                
-                {% if loja.especialidades %}
-                <div class="mb-3">
-                    <small class="text-muted"><strong>Especialidades:</strong></small><br>
-                    {% for esp in loja.get_especialidades_list()[:3] %}
-                    <span class="badge bg-light text-dark border">{{ esp }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                
-                <div class="d-grid">
-                    <a href="{{ url_for('loja_detalhes', loja_id=loja.id) }}" class="btn btn-primary">
-                        <i class="bi bi-info-circle"></i> Ver Detalhes Completos
-                    </a>
-                </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+                <a href="{{ url_for('noticia_detalhes', slug=noticia.slug) }}" class="btn btn-primary w-100">
+                    Ler Notícia <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 
-{% if lojas|length == 0 %}
-<div class="alert alert-info text-center">
-    <i class="bi bi-info-circle"></i> Nenhuma loja cadastrada ainda. 
-    <a href="{{ url_for('cadastrar_loja') }}" class="alert-link">Seja a primeira!</a>
-</div>
-{% endif %}
-
-{% if lojas|length > 6 %}
-<div class="row mt-4">
-    <div class="col-12 text-center">
-        <a href="{{ url_for('ranking') }}" class="btn btn-lg btn-outline-primary">
-            <i class="bi bi-trophy"></i> Ver Todas as {{ lojas|length }} Lojas no Ranking
-        </a>
+<!-- Categorias -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h4 class="mb-3"><i class="bi bi-grid"></i> Categorias</h4>
+        <div class="d-flex flex-wrap gap-2">
+            {% for categoria in categorias %}
+            <a href="{{ url_for('categoria', slug=categoria.slug) }}" class="btn btn-outline-primary">
+                {{ categoria.nome }}
+            </a>
+            {% endfor %}
+        </div>
     </div>
 </div>
-{% endif %}
+
+<!-- Notícias Recentes -->
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-4"><i class="bi bi-newspaper"></i> Últimas Notícias</h3>
+    </div>
+    {% for noticia in noticias_recentes %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <img src="{{ noticia.imagem_url }}" class="card-img-top" alt="{{ noticia.titulo }}">
+            <div class="card-body">
+                <span class="badge badge-categoria bg-secondary">{{ noticia.categoria.nome }}</span>
+                <h6 class="card-title mt-2">{{ noticia.titulo }}</h6>
+                <p class="card-text text-muted small">{{ noticia.resumo[:100] }}...</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-eye"></i> {{ noticia.visualizacoes }}
+                    </small>
+                    <small class="text-muted">{{ noticia.data_publicacao.strftime('%d/%m') }}</small>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+                <a href="{{ url_for('noticia_detalhes', slug=noticia.slug) }}" class="btn btn-sm btn-outline-primary w-100">
+                    Ler mais
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

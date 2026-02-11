@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ categoria.nome }} - IA News{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-folder"></i> {{ categoria.nome }}</h1>
+        <p class="lead text-muted">{{ categoria.descricao }}</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    {% for noticia in noticias %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <img src="{{ noticia.imagem_url }}" class="card-img-top" alt="{{ noticia.titulo }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ noticia.titulo }}</h5>
+                <p class="card-text text-muted">{{ noticia.resumo[:120] }}...</p>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted">
+                        <i class="bi bi-eye"></i> {{ noticia.visualizacoes }}
+                        <i class="bi bi-heart-fill text-danger ms-2"></i> {{ noticia.likes }}
+                    </small>
+                    <small class="text-muted">{{ noticia.data_publicacao.strftime('%d/%m/%Y') }}</small>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+                <a href="{{ url_for('noticia_detalhes', slug=noticia.slug) }}" class="btn btn-primary w-100">
+                    Ler Notícia
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if noticias|length == 0 %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Nenhuma notícia encontrada nesta categoria ainda.
+</div>
+{% endif %}
+
+<div class="text-center mt-4">
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar para Início
+    </a>
+</div>
+{% endblock %}
